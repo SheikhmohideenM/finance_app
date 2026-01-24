@@ -1,0 +1,13 @@
+<h1 class="text-2xl font-bold mb-4">Budgets</h1>
+
+<%= link_to "Add Category", new_category_path,
+      class: "bg-black text-white px-4 py-2 rounded mb-4 inline-block" %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <% @categories.each do |cat| %>
+    <div class="bg-white p-4 rounded shadow">
+      <h3 class="font-semibold"><%= cat.name %></h3>
+      <p>Monthly Budget: <%= number_to_currency(cat.monthly_budget) %></p>
+    </div>
+  <% end %>
+</div>

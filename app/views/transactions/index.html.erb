@@ -1,0 +1,25 @@
+<h1 class="text-2xl font-bold mb-4">Transactions</h1>
+
+<%= link_to "Add Transaction", new_transaction_path,
+      class: "bg-black text-white px-4 py-2 rounded mb-4 inline-block" %>
+
+<table class="w-full bg-white rounded shadow">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="p-3">Date</th>
+      <th class="p-3">Category</th>
+      <th class="p-3">Amount</th>
+      <th class="p-3">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @transactions.each do |t| %>
+      <tr class="border-t">
+        <td class="p-3"><%= t.date %></td>
+        <td class="p-3"><%= t.category.name %></td>
+        <td class="p-3"><%= number_to_currency(t.amount) %></td>
+        <td class="p-3"><%= t.description %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

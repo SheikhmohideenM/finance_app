@@ -1,0 +1,26 @@
+<h1 class="text-2xl font-bold mb-4">Accounts</h1>
+
+<%= link_to "Add Account", new_account_path,
+      class: "inline-block mb-4 bg-black text-white px-4 py-2 rounded" %>
+
+<table class="w-full bg-white rounded shadow">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="p-3 text-left">Name</th>
+      <th class="p-3 text-left">Balance</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @accounts.each do |acc| %>
+      <tr class="border-t">
+        <td class="p-3"><%= acc.name %></td>
+        <td class="p-3"><%= number_to_currency(acc.balance) %></td>
+        <td class="p-3">
+          <%= link_to "Delete", acc, method: :delete,
+                class: "text-red-600" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

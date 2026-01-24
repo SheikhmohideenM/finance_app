@@ -1,0 +1,19 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+
+    <%= form_with url: login_path, class: "space-y-4" do %>
+      <div>
+        <label class="block text-sm font-medium">Email</label>
+        <input type="email" name="email" class="mt-1 w-full rounded-md border-gray-300">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Password</label>
+        <input type="password" name="password" class="mt-1 w-full rounded-md border-gray-300">
+      </div>
+
+      <button class="w-full bg-black text-white py-2 rounded-md">Login</button>
+    <% end %>
+  </div>
+</div>
