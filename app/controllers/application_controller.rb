@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+  protect_from_forgery with: :null_session
+
+  before_action :set_csrf_cookies
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -11,7 +14,9 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by(id: session[:user_id])
   end
 
-  # def require_login
-  #   redirect_to login_path unless current_user
-  # end
+    private
+
+    def set_csrf_cookies
+      cookies["CSRF-TOKEN"] = form_authenticity_token
+    end
 end

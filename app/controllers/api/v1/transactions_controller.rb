@@ -1,4 +1,4 @@
-class TransactionsController < ApplicationController
+class Api::V1::TransactionsController < ApplicationController
   before_action :require_login
   def index
     @transactions = Transaction.joins(account: :user)

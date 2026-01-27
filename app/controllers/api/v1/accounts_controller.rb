@@ -1,4 +1,4 @@
-class AccountsController < ApplicationController
+class Api::V1::AccountsController < ApplicationController
   # before_action :require_login
   def index
     render json: current_user.accounts

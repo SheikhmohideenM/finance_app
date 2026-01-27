@@ -1,5 +1,5 @@
 class DashboardController < ApplicationController
-  before_action :require_login
+  protect_from_forgery with: :null_session
   def index
     @accounts = current_user.accounts
     @transactions = Transaction.joins(account: :user).where(accounts: { user_id: current_user.id })

@@ -1,19 +1,19 @@
 Rails.application.routes.draw do
   root "sessions#new"
 
-  # get "transactions/index"
-  # get "transactions/new"
-  # post "transactions/create"
-  # delete "transactions/destroy"
+  get "transactions/index"
+  get "transactions/new"
+  post "transactions/create"
+  delete "transactions/destroy"
 
-  # get "categories/index"
-  # get "categories/new"
-  # post "categories/create"
+  get "categories/index"
+  get "categories/new"
+  post "categories/create"
 
-  # get "accounts/index"
-  # get "accounts/new"
-  # post "accounts/create"
-  # delete "accounts/destroy"
+  get "accounts/index"
+  get "accounts/new"
+  post "accounts/create"
+  delete "accounts/destroy"
 
   # Authentication
   get "/signup", to: "users#new"

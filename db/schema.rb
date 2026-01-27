@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_27_060037) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_27_120238) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_060037) do
     t.decimal "spent"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["color"], name: "index_budgets_on_color", unique: true
   end
 
   create_table "categories", force: :cascade do |t|
