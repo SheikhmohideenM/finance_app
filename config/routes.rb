@@ -1,19 +1,19 @@
 Rails.application.routes.draw do
   root "sessions#new"
 
-  get "transactions/index"
-  get "transactions/new"
-  post "transactions/create"
-  delete "transactions/destroy"
+  # get "transactions/index"
+  # get "transactions/new"
+  # post "transactions/create"
+  # delete "transactions/destroy"
 
-  get "categories/index"
-  get "categories/new"
-  post "categories/create"
+  # get "categories/index"
+  # get "categories/new"
+  # post "categories/create"
 
-  get "accounts/index"
-  get "accounts/new"
-  post "accounts/create"
-  delete "accounts/destroy"
+  # get "accounts/index"
+  # get "accounts/new"
+  # post "accounts/create"
+  # delete "accounts/destroy"
 
   # Authentication
   get "/signup", to: "users#new"
@@ -24,20 +24,18 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#index"
 
-  resources :accounts
-  resources :categories
-  resources :transactions
+  namespace :api do
+    namespace :v1 do
+      resources :budgets
+      resources :pots
+      resources :transactions
+      resources :categories
+      resources :accounts
+    end
+  end
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
