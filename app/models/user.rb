@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :accounts, dependent: :destroy
   has_many :categories, dependent: :destroy
+  has_many :pots, dependent: :destroy
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: {

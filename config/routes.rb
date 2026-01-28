@@ -27,7 +27,12 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :budgets
-      resources :pots
+      resources :pots do
+        member do
+          post :add_money
+          post :withdraw
+        end
+      end
       resources :transactions
       resources :categories
       resources :accounts
