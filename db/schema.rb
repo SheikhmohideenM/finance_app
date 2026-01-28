@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_27_183422) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_28_195659) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,7 +31,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_183422) do
     t.decimal "spent"
     t.string "title"
     t.datetime "updated_at", null: false
-    t.index ["color"], name: "index_budgets_on_color", unique: true
+    t.bigint "user_id", null: false
+    t.index "lower((category)::text), user_id", name: "index_budgets_on_category_and_user", unique: true
+    t.index "lower((color)::text), user_id", name: "index_budgets_on_color_and_user", unique: true
+    t.index ["user_id"], name: "index_budgets_on_user_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -57,13 +60,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_183422) do
   create_table "transactions", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.decimal "amount"
-    t.bigint "category_id", null: false
+    t.bigint "budget_id"
     t.datetime "created_at", null: false
     t.date "date"
     t.string "description"
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
-    t.index ["category_id"], name: "index_transactions_on_category_id"
+    t.index ["budget_id"], name: "index_transactions_on_budget_id"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -76,8 +81,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_183422) do
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"
   add_foreign_key "pots", "users"
   add_foreign_key "transactions", "accounts"
-  add_foreign_key "transactions", "categories"
+  add_foreign_key "transactions", "budgets"
+  add_foreign_key "transactions", "users"
 end

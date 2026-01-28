@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
-  # protect_from_forgery with: :null_session
-  protect_from_forgery with: :exception
+  protect_from_forgery with: :null_session
+  # protect_from_forgery with: :exception
 
   before_action :set_csrf_cookies
 
@@ -9,18 +9,21 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  # Changes to the importmap will invalidate the etag for HTML responses
-  stale_when_importmap_changes
-
   helper_method :current_user
 
   def current_user
     @current_user ||= User.find_by(id: session[:user_id])
   end
 
-    private
-
-    def set_csrf_cookies
-      cookies["CSRF-TOKEN"] = form_authenticity_token
+  def authenticate_user!
+    unless current_user
+      render json: { error: "Unauthorized" }, status: :unauthorized
     end
+  end
+
+  private
+
+  def set_csrf_cookies
+    cookies["CSRF-TOKEN"] = form_authenticity_token
+  end
 end

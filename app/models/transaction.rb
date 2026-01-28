@@ -1,13 +1,23 @@
 class Transaction < ApplicationRecord
+  belongs_to :user
   belongs_to :account
-  belongs_to :category
+  belongs_to :budget, optional: true
+  belongs_to :recurring_bill, optional: true
 
-  validates :amount, :date, presence: true
+  has_one :category, through: :budget
 
-  after_save :update_account_balance
-  after_destroy :update_account_balance
+  validates :amount, presence: true
+  validates :date, presence: true
 
-  def update_account_balance
-    account.update(balance: account.transactions.sum(:amount))
+  validate :budget_limit_check, on: :create
+
+  private
+
+  def budget_limit_check
+    return unless budget.present? && amount.negative?
+
+    if budget.remaining < amount.abs
+      errors.add(:amount, "exceeds remaining budget")
+    end
   end
 end

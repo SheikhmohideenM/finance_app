@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
   root "sessions#new"
 
-  get "transactions/index"
-  get "transactions/new"
-  post "transactions/create"
-  delete "transactions/destroy"
+  # get "transactions/index"
+  # get "transactions/new"
+  # post "transactions/create"
+  # delete "transactions/destroy"
 
   get "categories/index"
   get "categories/new"
