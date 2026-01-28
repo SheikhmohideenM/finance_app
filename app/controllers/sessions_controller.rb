@@ -1,5 +1,7 @@
 class SessionsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [ :create ]
+  # skip_before_action :verify_authenticity_token
+
+  skip_forgery_protection only: [ :create ]
 
   def new
   end
@@ -9,7 +11,7 @@ class SessionsController < ApplicationController
 
     if user&.authenticate(params[:password])
       session[:user_id] = user.id
-      render json: { message: "Logged in successfully" }, status: :ok
+      render json: { success: true, user: user }
     else
       render json: { error: "Invalid credentials" }, status: :unauthorized
     end
