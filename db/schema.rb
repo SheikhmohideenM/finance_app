@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_28_195659) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_28_222457) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_195659) do
     t.index ["user_id"], name: "index_pots_on_user_id"
   end
 
+  create_table "recurring_bills", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.boolean "auto_pay", default: true
+    t.bigint "budget_id"
+    t.datetime "created_at", null: false
+    t.string "frequency", null: false
+    t.string "name", null: false
+    t.date "next_run_on", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["account_id"], name: "index_recurring_bills_on_account_id"
+    t.index ["budget_id"], name: "index_recurring_bills_on_budget_id"
+    t.index ["user_id"], name: "index_recurring_bills_on_user_id"
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.decimal "amount"
@@ -84,6 +100,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_195659) do
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"
   add_foreign_key "pots", "users"
+  add_foreign_key "recurring_bills", "accounts"
+  add_foreign_key "recurring_bills", "budgets"
+  add_foreign_key "recurring_bills", "users"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "budgets"
   add_foreign_key "transactions", "users"

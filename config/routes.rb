@@ -34,11 +34,14 @@ Rails.application.routes.draw do
         end
       end
       resources :transactions
+      resources :recurring_bills
       resources :categories
       resources :accounts
     end
   end
 
+  require "sidekiq/web"
+  mount Sidekiq::Web => "/sidekiq"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

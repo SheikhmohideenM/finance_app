@@ -1,0 +1,7 @@
+:concurrency: 5
+
+:schedule:
+  recurring_bill_job:
+    cron: "0 0 * * *"
+    class: "RecurringBillJob"
+    queue: default

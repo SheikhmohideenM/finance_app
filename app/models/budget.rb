@@ -1,6 +1,7 @@
 class Budget < ApplicationRecord
   belongs_to :user
   has_many :transactions, dependent: :destroy
+  has_many :recurring_bills
 
   validates :title, :category, :color, :max, presence: true
   validates :max, numericality: { greater_than: 0 }
@@ -19,6 +20,10 @@ class Budget < ApplicationRecord
 
   after_initialize do
     self.spent ||= 0
+  end
+
+  def spent
+    transactions.sum(:amount)
   end
 
   def remaining
