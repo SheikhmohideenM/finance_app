@@ -23,7 +23,10 @@ class Budget < ApplicationRecord
   end
 
   def spent
-    transactions.sum(:amount)
+    transactions
+      .where("date <= ?", Date.today)
+      .sum(:amount)
+      .abs
   end
 
   def remaining

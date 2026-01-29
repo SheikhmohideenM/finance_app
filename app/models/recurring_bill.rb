@@ -12,7 +12,9 @@ class RecurringBill < ApplicationRecord
   validate :next_run_on_cannot_be_past
 
   validate :budget_has_enough_remaining, if: -> { budget.present? }
-  after_create :create_initial_transaction, if: -> { auto_pay && budget.present? }
+
+  # Detect when recurring bill created
+  # after_create :create_initial_transaction, if: -> { auto_pay && budget.present? }
 
   def budget_has_enough_remaining
     if budget.remaining < amount
@@ -26,16 +28,17 @@ class RecurringBill < ApplicationRecord
     end
   end
 
-  def create_initial_transaction
-    Transaction.create!(
-      user: user,
-      account: account,
-      budget: budget,
-      amount: amount,
-      date: next_run_on,
-      description: "Auto-pay: #{name}"
-    )
-  end
+  # Detect when recurring bill created
+  # def create_initial_transaction
+  #   Transaction.create!(
+  #     user: user,
+  #     account: account,
+  #     budget: budget,
+  #     amount: amount,
+  #     date: next_run_on,
+  #     description: "Auto-pay: #{name}"
+  #   )
+  # end
 
   def next_run_date
     case frequency

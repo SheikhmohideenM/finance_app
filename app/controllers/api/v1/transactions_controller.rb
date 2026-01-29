@@ -3,18 +3,39 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :set_transaction, only: %i[show update destroy]
 
   # GET /api/v1/transactions
+  # def index
+  #   transactions = current_user.transactions
+
+  #   if params[:budget].present?
+  #     transactions = transactions.where(budget_id: params[:budget])
+  #   end
+
+  #   if params[:from].present? && params[:to].present?
+  #     transactions = transactions.where(date: params[:from]..params[:to])
+  #   end
+
+  #   render json: transactions.order(date: :desc)
+  # end
+
   def index
     transactions = current_user.transactions
+      .includes(:budget, :user)
+      .order(date: :desc)
 
-    if params[:budget].present?
-      transactions = transactions.where(budget_id: params[:budget])
-    end
-
-    if params[:from].present? && params[:to].present?
-      transactions = transactions.where(date: params[:from]..params[:to])
-    end
-
-    render json: transactions.order(date: :desc)
+    render json: transactions.map { |t|
+      {
+        id: t.id,
+        account_id: t.account_id,
+        amount: t.amount,
+        date: t.date,
+        description: t.description,
+        created_at: t.created_at,
+        user_id: t.user_id,
+        user_name: t.user.name.titleize,
+        budget_id: t.budget_id,
+        category: t.budget&.title&.titleize
+      }
+    }
   end
 
   def show
@@ -89,7 +110,6 @@ class Api::V1::TransactionsController < ApplicationController
 
     head :no_content
   end
-
 
 
   private
