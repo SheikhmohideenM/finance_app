@@ -11,7 +11,17 @@ class Transaction < ApplicationRecord
 
   validate :budget_limit_check, on: :create
 
+  def editable?
+    Time.current <= created_at + 24.hours
+  end
+
   private
+
+  def budget_only_for_expenses
+    if budget.present? && amount.positive?
+      errors.add(:budget, "can only be assigned to expenses")
+    end
+  end
 
   def budget_limit_check
     return unless budget.present? && amount.negative?

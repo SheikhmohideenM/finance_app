@@ -18,15 +18,17 @@ class Budget < ApplicationRecord
     message: "color already used"
   }
 
+  # def spent(as_of: Date.current)
+  #   transactions
+  #     .where(undone: [ false, nil ])
+  #     .where("date <= ?", as_of)
+  #     .where("amount < 0")
+  #     .sum("ABS(amount)")
+  # end
+
+
   after_initialize do
     self.spent ||= 0
-  end
-
-  def spent
-    transactions
-      .where("date <= ?", Date.today)
-      .sum(:amount)
-      .abs
   end
 
   def remaining

@@ -1,45 +1,13 @@
 class Api::V1::TransactionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_transaction, only: %i[show update destroy]
-
-  # GET /api/v1/transactions
-  # def index
-  #   transactions = current_user.transactions
-
-  #   if params[:budget].present?
-  #     transactions = transactions.where(budget_id: params[:budget])
-  #   end
-
-  #   if params[:from].present? && params[:to].present?
-  #     transactions = transactions.where(date: params[:from]..params[:to])
-  #   end
-
-  #   render json: transactions.order(date: :desc)
-  # end
+  before_action :set_transaction, only: %i[update destroy undo]
 
   def index
     transactions = current_user.transactions
-      .includes(:budget, :user)
+      .includes(:budget)
       .order(date: :desc)
 
-    render json: transactions.map { |t|
-      {
-        id: t.id,
-        account_id: t.account_id,
-        amount: t.amount,
-        date: t.date,
-        description: t.description,
-        created_at: t.created_at,
-        user_id: t.user_id,
-        user_name: t.user.name.titleize,
-        budget_id: t.budget_id,
-        category: t.budget&.title&.titleize
-      }
-    }
-  end
-
-  def show
-    render json: @transaction
+    render json: transactions.map { |t| serialize(t) }
   end
 
   def create
@@ -48,69 +16,70 @@ class Api::V1::TransactionsController < ApplicationController
     ActiveRecord::Base.transaction do
       transaction.save!
 
-      # Update account balance
       transaction.account.update!(
-        balance: transaction.account.balance + transaction.amount
+        balance: transaction.account.balance - transaction.amount
       )
 
-      # Update budget spent
-      if transaction.budget.present? && transaction.amount.negative?
-        transaction.budget.update!(
-          spent: transaction.budget.spent + transaction.amount.abs
-        )
+      if transaction.budget
+        transaction.budget.increment!(:spent, transaction.amount)
       end
     end
 
     render json: transaction, status: :created
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
+
   def update
+    return forbidden unless @transaction.editable?
+
     old_amount = @transaction.amount
     new_amount = transaction_params[:amount].to_f
-
     diff = new_amount - old_amount
-
-    old_spent = old_amount.negative? ? old_amount.abs : 0
-    new_spent = new_amount.negative? ? new_amount.abs : 0
-    spent_diff = new_spent - old_spent
 
     ActiveRecord::Base.transaction do
       @transaction.update!(transaction_params)
-
       @transaction.account.update!(
         balance: @transaction.account.balance + diff
       )
-
-      if @transaction.budget.present?
-        @transaction.budget.increment!(:spent, spent_diff)
-      end
     end
 
-    render json: @transaction
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+    render json: serialize(@transaction)
   end
 
-
-
   def destroy
+    return forbidden unless @transaction.editable?
+
     ActiveRecord::Base.transaction do
       @transaction.account.update!(
         balance: @transaction.account.balance - @transaction.amount
       )
-
-      if @transaction.budget.present? && @transaction.amount.negative?
-        @transaction.budget.decrement!(:spent, @transaction.amount.abs)
-      end
-
       @transaction.destroy!
     end
 
     head :no_content
   end
 
+  def undo
+    return render json: { error: "Undo allowed only within 24 hours" },
+                  status: :forbidden unless @transaction.editable?
+
+    return render json: { error: "Already undone" },
+                  status: :unprocessable_entity if @transaction.undone?
+
+    ActiveRecord::Base.transaction do
+      @transaction.account.update!(
+        balance: @transaction.account.balance + @transaction.amount
+      )
+
+      if @transaction.budget
+        @transaction.budget.decrement!(:spent, @transaction.amount)
+      end
+
+      @transaction.update!(undone: true)
+    end
+
+    render json: { message: "Transaction undone successfully" }
+  end
 
   private
 
@@ -118,9 +87,25 @@ class Api::V1::TransactionsController < ApplicationController
     @transaction = current_user.transactions.find(params[:id])
   end
 
+  def forbidden
+    render json: { errors: [ "Action allowed only within 24 hours" ] }, status: :forbidden
+  end
+
   def transaction_params
-  params.require(:transaction)
-        .permit(:account_id, :budget_id,
-                :amount, :date, :description)
+    params.require(:transaction)
+          .permit(:account_id, :budget_id, :amount, :date, :description)
+  end
+
+  def serialize(t)
+    {
+      id: t.id,
+      amount: t.amount,
+      date: t.date,
+      description: t.description,
+      created_at: t.created_at,
+      budget_id: t.budget_id,
+      category: t.budget&.category&.titleize,
+      undone: t.undone
+    }
   end
 end

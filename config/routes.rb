@@ -33,7 +33,9 @@ Rails.application.routes.draw do
           post :withdraw
         end
       end
-      resources :transactions
+      resources :transactions do
+        post :undo, on: :member
+      end
       resources :recurring_bills
       resources :categories
       resources :accounts
