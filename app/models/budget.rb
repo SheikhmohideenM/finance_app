@@ -26,7 +26,6 @@ class Budget < ApplicationRecord
   #     .sum("ABS(amount)")
   # end
 
-
   after_initialize do
     self.spent ||= 0
   end

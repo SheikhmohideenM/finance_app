@@ -99,6 +99,8 @@ class Api::V1::TransactionsController < ApplicationController
   def serialize(t)
     {
       id: t.id,
+      user_id: t.user_id,
+      user_name: t.user.name.titleize,
       amount: t.amount,
       date: t.date,
       description: t.description,
