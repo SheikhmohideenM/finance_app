@@ -1,3 +1,7 @@
+
+return unless defined?(Sidekiq)
+return unless ENV["REDIS_URL"].present?
+
 require "sidekiq/cron/job"
 
 schedule_file = Rails.root.join("config/sidekiq.yml")
