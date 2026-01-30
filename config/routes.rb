@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
   root "sessions#new"
 
-  get "transactions/index"
-  get "transactions/new"
-  post "transactions/create"
-  delete "transactions/destroy"
+  # get "transactions/index"
+  # get "transactions/new"
+  # post "transactions/create"
+  # delete "transactions/destroy"
 
   get "categories/index"
   get "categories/new"
@@ -33,12 +33,17 @@ Rails.application.routes.draw do
           post :withdraw
         end
       end
-      resources :transactions
+      resources :transactions do
+        post :undo, on: :member
+      end
+      resources :recurring_bills
       resources :categories
       resources :accounts
     end
   end
 
+  require "sidekiq/web"
+  mount Sidekiq::Web => "/sidekiq"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

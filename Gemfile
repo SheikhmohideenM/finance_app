@@ -70,6 +70,9 @@ gem "tailwindcss-rails"
 gem "chartkick"
 gem "groupdate"
 gem "rack-cors"
+gem "sidekiq"
+gem "sidekiq-cron"
+
 
 group :development, :test do
   gem "rspec-rails"

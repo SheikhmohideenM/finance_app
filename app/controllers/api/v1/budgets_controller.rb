@@ -1,10 +1,11 @@
 class Api::V1::BudgetsController < ApplicationController
-  protect_from_forgery with: :null_session
+  # protect_from_forgery with: :null_session
+  before_action :authenticate_user!
 
   before_action :set_budget, only: [ :show, :update, :destroy ]
 
   def index
-    budgets = Budget.order(created_at: :desc)
+    budgets = current_user.budgets.order(created_at: :desc)
     render json: budgets.map { |b| serialize(b) }
   end
 
@@ -13,7 +14,7 @@ class Api::V1::BudgetsController < ApplicationController
   end
 
   def create
-    budget = Budget.new(budget_params)
+    budget = current_user.budgets.new(budget_params)
 
     if budget.save
       render json: serialize(budget), status: :created
