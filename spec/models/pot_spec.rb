@@ -1,5 +1,7 @@
-require 'rails_helper'
-
+require "rails_helper"
 RSpec.describe Pot, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "calculates percentage correctly" do
+    pot = Pot.new(target: 1000, saved: 250)
+    expect(pot.percent).to eq(25.0)
+  end
 end
